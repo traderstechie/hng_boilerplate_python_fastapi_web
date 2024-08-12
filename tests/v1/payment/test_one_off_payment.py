@@ -109,10 +109,9 @@ def test_configure_payment_successful(
     assert resp_d["message"] == "Payment data configured successfully"
 
     data =  resp_d['data']
-    print(resp_d)
-    assert data['tx_ref'] == test_user.id
     assert data['user_email'] == test_user.email
     assert data['price'] == test_bill_plan.price
+    assert data['tx_ref'].startswith(test_user.id)
     assert data['currency'] == test_bill_plan.currency
     assert data['payment_title'] == "Convey AI Video Suites"
     assert data['public_key'] == config('RAVE_PUBLIC_KEY_TEST')

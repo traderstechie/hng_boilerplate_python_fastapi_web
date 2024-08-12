@@ -1,4 +1,5 @@
 from fastapi import Depends, APIRouter, status, Query, HTTPException, Request
+from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 from typing import Annotated
 
@@ -41,13 +42,18 @@ def configure_payment(
     # GET billing plan
     bill_plan = bp_service.fetch(db, billing_plan_id)
 
+    # CONFIGURE return url
     redirect_url = request.url_for(
         'handle_payment', billing_plan_id=billing_plan_id, 
         payment_gateway=payment_gateway)
+    
+    # GENERATE transaction reference
+    tx_ref = f"{current_user.id}#{datetime.now(tz=timezone.utc).timestamp()}"
 
+    # SET actual data for payment
     payment_data = {
+        "tx_ref": tx_ref,
         "price": bill_plan.price,
-        "tx_ref": current_user.id,
         "redirect_url": f"{redirect_url}",
         "currency": bill_plan.currency,
         "user_email": current_user.email,

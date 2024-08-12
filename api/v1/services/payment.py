@@ -107,7 +107,7 @@ class PaymentGatewayService:
 
     def confirm_flutterwave_payment(self, user_id: str, data: dict, billing_plan: BillingPlan):
         """Handle checkout response from `flutterwave`"""
-        if data.get('tx_ref') != user_id:
+        if not data.get('tx_ref') or not data['tx_ref'].startswith(user_id):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Transaction reference error."
@@ -139,17 +139,11 @@ class PaymentGatewayService:
             )
 
         try:
-            resp = rave.Account.verify(user_id)
+            resp = rave.Account.verify(data['tx_ref'])
         except RaveExceptions.TransactionVerificationError as e:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Error: {e.err['errMsg']} [{e.err['flwRef']}]."
-            )
-
-        if resp.get('txRef') != user_id:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid response txn ref. If you were debited, contact you bank."
             )
 
         if resp.get('status') != "success":
