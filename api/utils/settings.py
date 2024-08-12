@@ -29,6 +29,13 @@ class Settings(BaseSettings):
     MAIL_PORT: int = config("MAIL_PORT")
     MAIL_SERVER: str = config("MAIL_SERVER")
 
+    if config("PYTHON_ENV") in ["production", "prod"]:
+        RAVE_PUBLIC_KEY: str = config("RAVE_PUBLIC_KEY_LIVE")
+        RAVE_SECRET_KEY: str = config("RAVE_SECRET_KEY_LIVE")
+    else:
+        RAVE_PUBLIC_KEY: str = config("RAVE_PUBLIC_KEY_TEST")
+        RAVE_SECRET_KEY: str = config("RAVE_SECRET_KEY_TEST")
+
     FLUTTERWAVE_SECRET: str = config("FLUTTERWAVE_SECRET")
 
     TWILIO_ACCOUNT_SID: str = config("TWILIO_ACCOUNT_SID")

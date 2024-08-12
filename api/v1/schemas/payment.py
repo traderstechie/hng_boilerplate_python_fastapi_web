@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr
-from typing import List
-from typing import Optional
 from datetime import datetime
+from typing import Optional
+from typing import List
 
 
 class PaymentResponse(BaseModel):
@@ -17,6 +17,15 @@ class PaymentResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class PaymentCreate(BaseModel):
+    user_id: str
+    amount: float
+    currency: str
+    status: str
+    method: str
+    transaction_id: str
 
 
 class PaymentBase(BaseModel):
